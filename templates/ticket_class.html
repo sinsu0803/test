@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Django Highcharts Example</title>
+    <style>
+        .highcharts-figure, .highcharts-data-table table {
+    min-width: 310px;
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+#container {
+    height: 400px;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+    </style>
+</head>
+<body>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column',
+                zoomType: 'xy'
+            },
+            title: {
+                text: '좌석 등급에 따른 타이타닉 생존/ 비 생존 인원 및 생존율'
+            },
+            xAxis: {
+                categories: {{ categories|safe }}  /* safe 필터 */
+
+            },
+            yAxis: [{ // Primary yAxis
+                min: 20, max: 70,
+                labels: {
+                    format: '{value}%',
+                    style: {
+                        color: Highcharts.getOptions().colors[4]
+                    }
+                },
+                title: {
+                    text: '생존율',
+                    style: {
+                        color: Highcharts.getOptions().colors[4]
+                    }
+                }
+            }, { // Secondary yAxis
+                min: 0, max: 600,
+                labels: {
+                    format: '{value}명',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: '인원',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+             legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    x: 120,
+                    verticalAlign: 'top',
+                    y: 100,
+                    floating: true,
+                    backgroundColor:
+                        Highcharts.defaultOptions.legend.backgroundColor || // theme
+                        'rgba(255,255,255,0.25)'
+                },
+
+            series: [{
+                name: '생존',
+                data: {{ survived_series }},
+                type: 'column',
+                color: 'green',
+                tooltip: {
+                    valueSuffix: ' 명'
+                },
+                yAxis: 1
+            }, {
+                name: '비 생존',
+                data: {{ not_survived_series }},
+                color: 'red',
+                type: 'column',
+                tooltip: {
+                        valueSuffix: ' 명'
+                    },
+                yAxis: 1
+            },
+                {
+                name: '생존율',
+                data: {{ rate }},
+                color: 'skyblue',
+                type: 'line',
+                tooltip: {
+                        valueSuffix: ' %'
+                    }
+            },]
+        });
+    </script>
+
+</body>
+</html>
